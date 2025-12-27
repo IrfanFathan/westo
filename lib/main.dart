@@ -1,60 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'core/theme/app_theme.dart';
+import 'data/services/api_service.dart';
+import 'data/services/mqtt_service.dart';
+import 'data/repositories/waste_repository_impl.dart';
+import 'domain/usecases/get_waste_level.dart';
+import 'domain/usecases/trigger_compressor.dart';
+import 'presentation/viewmodels/waste_viewmodel.dart';
+import 'presentation/screens/dashboard/dashboard_screen.dart';
 
 void main() {
   runApp(const WestoApp());
 }
+
+/// Root widget of the application
 class WestoApp extends StatelessWidget {
   const WestoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // ---- DATA LAYER ----
+    final apiService = ApiService();
+    final mqttService = MqttService();
 
-      title: 'Westo',
-
-      // Removes the debug banner from top-right corner
-      debugShowCheckedModeBanner: false,
-
-      // Apply the global light theme created
-      theme: AppTheme.lightTheme,
-
-      // Temporary home screen (replace later with Login/Dashboard)
-      home: const HomePlaceholder(),
+    final repository = WasteRepositoryImpl(
+      apiService: apiService,
+      mqttService: mqttService,
     );
-  }
-}
 
-// Temporary screen to verify theme is working
-class HomePlaceholder extends StatelessWidget {
-  const HomePlaceholder({super.key});
+    // ---- DOMAIN USE CASES ----
+    final getWasteLevel = GetWasteLevel(repository);
+    final triggerCompressor = TriggerCompressor(repository);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Westo Dashboard'),
-      ),
-      body: Center(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Theme Applied Successfully',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Test Button'),
-                ),
-              ],
-            ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => WasteViewModel(
+            getWasteLevel: getWasteLevel,
+            triggerCompressor: triggerCompressor,
+            repository: repository,
           ),
         ),
+      ],
+      child: MaterialApp(
+        title: 'Westo',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        home: const DashboardScreen(),
       ),
     );
   }
