@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  http: ^1.6.0
+  mqtt_client: ^10.11.3
 
 dev_dependencies:
   flutter_test:
