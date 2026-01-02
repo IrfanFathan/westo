@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:westo/core/constants/app_colors.dart';
-import 'package:westo/presentation/screens/dashboard/dashboard_screen.dart';
+import 'package:westo/presentation/screens/navigation/main_navigation_screen.dart';
 
 /// DeviceConnectScreen
 /// -------------------
 /// This screen is used to:
 /// 1. Ask the user to connect their phone to the ESP32 Wi-Fi hotspot
 /// 2. Verify whether ESP32 is reachable (using HTTP)
-/// 3. Navigate to the Dashboard once the connection is successful
+/// 3. Navigate to the MainNavigationScreen once the connection is successful
 ///
 /// NOTE:
 /// - We do NOT automatically connect to Wi-Fi
@@ -23,15 +23,14 @@ class DeviceConnectScreen extends StatefulWidget {
 }
 
 class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
-  // Indicates whether the app is currently checking connection
+  /// Indicates whether the app is currently checking connection
   bool _isChecking = false;
 
-  // Stores error message if connection fails
+  /// Stores error message if connection fails
   String? _error;
 
   /// STEP 1: Check ESP32 connectivity
   ///
-  /// This method:
   /// - Sends an HTTP request to ESP32 (`/status`)
   /// - If response is OK → device is connected
   /// - If fails → show error
@@ -42,27 +41,26 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
     });
 
     try {
-      // ESP32 default IP in AP mode is 192.168.4.1
+      // ESP32 default IP in AP mode
       final response = await http
           .get(Uri.parse('http://192.168.4.1/status'))
           .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200) {
-        // STEP 2: Navigate to dashboard if ESP32 responds
+        // STEP 2: Navigate to main navigation if ESP32 responds
         if (!mounted) return;
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const DashboardScreen(),
+            builder: (_) => const MainNavigationScreen(),
           ),
         );
       } else {
-        // ESP32 responded, but not correctly
         _error = 'ESP32 not responding properly';
       }
     } catch (e) {
-      // Most common case: phone is not connected to ESP32 Wi-Fi
+      // Phone not connected to ESP32 Wi-Fi
       _error = 'Not connected to WESTO ESP32 Wi-Fi';
     }
 
@@ -82,7 +80,7 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Wi-Fi icon for visual clarity
+            /// Wi-Fi icon
             Icon(
               Icons.wifi,
               size: 80,
@@ -90,7 +88,7 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Instruction text
+            /// Instruction text
             Text(
               'Connect to WESTO ESP32 Wi-Fi',
               style: Theme.of(context).textTheme.titleMedium,
@@ -98,7 +96,7 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Wi-Fi credentials shown to user
+            /// Wi-Fi credentials
             const Text(
               'Wi-Fi Name: WESTO_ESP32\nPassword: 12345678',
               textAlign: TextAlign.center,
@@ -106,7 +104,7 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
 
             const SizedBox(height: 24),
 
-            // Show error if connection fails
+            /// Error message
             if (_error != null)
               Text(
                 _error!,
@@ -116,7 +114,7 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
 
             const SizedBox(height: 16),
 
-            // Button to check connection
+            /// Check connection button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
