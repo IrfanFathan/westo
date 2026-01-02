@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:westo/presentation/screens/splash/splash_screen.dart';
 
 import 'core/theme/app_theme.dart';
 import 'data/services/api_service.dart';
@@ -47,7 +48,7 @@ class WestoApp extends StatelessWidget {
         title: 'Westo',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        home: const DashboardScreen(),
+        home: const SplashScreen(),
       ),
     );
   }
