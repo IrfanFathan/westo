@@ -1,6 +1,8 @@
 import 'package:westo/domain/entities/waste_status.dart';
 import 'package:westo/domain/repositories/waste_repository.dart';
+
 import 'package:westo/data/models/waste_status_model.dart';
+import 'package:westo/data/models/device_info_model.dart';
 import 'package:westo/data/services/api_service.dart';
 import 'package:westo/data/services/mqtt_service.dart';
 
@@ -48,5 +50,14 @@ class WasteRepositoryImpl implements WasteRepository {
     return mqttService.wasteStatusStream.map(
           (WasteStatusModel model) => model.toEntity(),
     );
+  }
+
+  /// Fetch ESP32 device information (HTTP)
+  ///
+  /// This method is intentionally NOT added to the domain interface
+  /// because device metadata is a presentation concern,
+  /// not core business logic.
+  Future<DeviceInfoModel> getDeviceInfo() async {
+    return apiService.fetchDeviceInfo();
   }
 }
