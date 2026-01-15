@@ -7,7 +7,8 @@ const char* sta_ssid = "*********;
 const char* sta_password = "******";
 
 const char* ap_ssid = "Westo_ESP32";
-const char* ap_password = "12345678";
+const char* ap_password = "12345678";// ESP32 hotspot password
+
 
 /* ================= SERVER ====================== */
 WebServer server(80);
