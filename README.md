@@ -1,16 +1,30 @@
-# westo
+# Westo 🚀
 
-Iot based product mobile app
+**Westo** is a Flutter-based mobile application designed to interface with [mention your IoT device]. It provides a seamless interface for monitoring real-time data and controlling hardware remotely.
 
-## Getting Started
+## ✨ Key Features
+- **Real-time Dashboard:** Live sensor readings updated via [MQTT/WebSockets].
+- **Device Provisioning:** Easy setup for new hardware using [Bluetooth/SmartConfig].
+- **Historical Analytics:** Visual charts showing usage patterns over time.
+- **Push Notifications:** Instant alerts for critical device events.
 
-This project is a starting point for a Flutter application.
+## 🛠 Tech Stack
+- **Framework:** Flutter (Android & iOS)
+- **Communication:** [e.g., MQTT, BLE, HTTP]
+- **State Management:** [e.g., Provider, Riverpod, BLoC]
+- **Hardware Compatibility:** [e.g., ESP32, Shelly, Custom Firmware]
 
-A few resources to get you started if this is your first Flutter project:
+## 📸 Screenshots
+| Dashboard | Device Settings | Analytics |
+| :---: | :---: | :---: |
+| ![Dash](https://via.placeholder.com/200x400) | ![Settings](https://via.placeholder.com/200x400) | ![Charts](https://via.placeholder.com/200x400) |
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## ⚙️ Getting Started
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Prerequisites
+- Flutter SDK (latest stable)
+- An active [Service Name, e.g., HiveMQ] account for the MQTT broker.
+
+### Installation
+1. **Clone the repo:**
+   
