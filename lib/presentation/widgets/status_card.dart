@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:westo/core/constants/app_colors.dart';
-import 'package:westo/core/theme/app_theme.dart';
 
 /// A reusable card widget to display device and waste status
 ///
 /// This widget:
 /// - Displays waste level
-/// - Displays connection status
+/// - Displays ESP32 connection status
 /// - Displays compressor state
-/// - Contains NO logic or API calls
+/// - Contains NO business logic or API calls
 class StatusCard extends StatelessWidget {
   final int wasteLevel;
   final bool isConnected;
@@ -25,43 +24,48 @@ class StatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
+            /// Title
             Text(
               'Bin Status',
               style: Theme.of(context).textTheme.titleMedium,
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
-            // Waste level
+            /// Waste level
             _StatusRow(
               label: 'Waste Level',
               value: '$wasteLevel%',
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // Connection status
+            /// ESP32 connection status (IMPORTANT)
             _StatusRow(
               label: 'Connection',
-              value: isConnected ? 'Connected' : 'Disconnected',
+              value: isConnected ? 'ESP32 Connected' : 'ESP32 Disconnected',
               valueColor:
+              isConnected ? AppColors.success : AppColors.error,
+              showIndicator: true,
+              indicatorColor:
               isConnected ? AppColors.success : AppColors.error,
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // Compressor status
+            /// Compressor status
             _StatusRow(
               label: 'Compressor',
               value: isCompressorActive ? 'Running' : 'Idle',
-              valueColor:
-              isCompressorActive ? AppColors.warning : AppColors.textSecondary,
+              valueColor: isCompressorActive
+                  ? AppColors.warning
+                  : AppColors.textSecondary,
             ),
           ],
         ),
@@ -76,10 +80,16 @@ class _StatusRow extends StatelessWidget {
   final String value;
   final Color? valueColor;
 
+  /// Optional status indicator (used for connection)
+  final bool showIndicator;
+  final Color? indicatorColor;
+
   const _StatusRow({
     required this.label,
     required this.value,
     this.valueColor,
+    this.showIndicator = false,
+    this.indicatorColor,
   });
 
   @override
@@ -87,16 +97,33 @@ class _StatusRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        /// Left label
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        Text(
-          value,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: valueColor),
+
+        /// Right value + optional indicator
+        Row(
+          children: [
+            if (showIndicator)
+              Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  color: indicatorColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            Text(
+              value,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: valueColor),
+            ),
+          ],
         ),
       ],
     );
