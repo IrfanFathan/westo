@@ -10,8 +10,27 @@ import 'domain/usecases/get_waste_level.dart';
 import 'domain/usecases/trigger_compressor.dart';
 import 'presentation/viewmodels/waste_viewmodel.dart';
 import 'presentation/screens/dashboard/dashboard_screen.dart';
+import 'package:workmanager/workmanager.dart';
+import 'core/services/background_worker.dart';
+import 'core/services/notification_service.dart';
 
-void main() {
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await NotificationService.init();
+
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: false,
+  );
+
+  Workmanager().registerPeriodicTask(
+    'wasteCheckTaskId',
+    wasteCheckTask,
+    frequency: const Duration(minutes: 15),
+  );
+
   runApp(const WestoApp());
 }
 
