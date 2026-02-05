@@ -1,7 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
-  static final _notifications =
+  static final FlutterLocalNotificationsPlugin _plugin =
   FlutterLocalNotificationsPlugin();
 
   static Future<void> init() async {
@@ -11,10 +11,10 @@ class NotificationService {
     const settings =
     InitializationSettings(android: androidSettings);
 
-    await _notifications.initialize(settings);
+    await _plugin.initialize(settings);
   }
 
-  static Future<void> showNotification({
+  static Future<void> show({
     required int id,
     required String title,
     required String body,
@@ -23,15 +23,14 @@ class NotificationService {
     final androidDetails = AndroidNotificationDetails(
       'waste_alerts',
       'Waste Alerts',
-      channelDescription: 'Notifications for waste level alerts',
-      importance: critical
-          ? Importance.max
-          : Importance.high,
+      channelDescription: 'Waste bin level alerts',
+      importance:
+      critical ? Importance.max : Importance.high,
       priority:
       critical ? Priority.max : Priority.high,
     );
 
-    await _notifications.show(
+    await _plugin.show(
       id,
       title,
       body,

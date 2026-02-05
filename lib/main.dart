@@ -14,12 +14,17 @@ import 'package:workmanager/workmanager.dart';
 import 'core/services/background_worker.dart';
 import 'core/services/notification_service.dart';
 
-
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // -------------------------------
+  // Initialize Notification System
+  // -------------------------------
   await NotificationService.init();
 
+  // -------------------------------
+  // Initialize Background Worker
+  // -------------------------------
   Workmanager().initialize(
     callbackDispatcher,
     isInDebugMode: false,
@@ -42,11 +47,23 @@ class WestoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // ---- DATA LAYER ----
     final apiService = ApiService();
+
+    /*
     final mqttService = MqttService();
+
+    ⚠️ MQTT TEMPORARILY DISABLED
+    --------------------------------
+    Reason:
+    - ESP32 firmware does not implement MQTT
+    - Prevents false "device disconnected" states
+    - REST (HTTP) is the single source of truth
+
+    This block is kept for future upgrades.
+    */
 
     final repository = WasteRepositoryImpl(
       apiService: apiService,
-      mqttService: mqttService,
+      // mqttService: mqttService, // 🔕 Disabled intentionally
     );
 
     // ---- DOMAIN USE CASES ----

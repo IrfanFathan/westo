@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:workmanager/workmanager.dart';
 import 'package:http/http.dart' as http;
+import 'package:workmanager/workmanager.dart';
 
 import 'notification_service.dart';
 
@@ -18,27 +18,27 @@ void callbackDispatcher() {
           final data =
           json.decode(response.body) as Map<String, dynamic>;
 
-          final int level = data['wasteLevel'];
+          final int wasteLevel = data['wasteLevel'];
 
-          if (level >= 100) {
-            await NotificationService.showNotification(
-              id: 2,
+          if (wasteLevel >= 100) {
+            await NotificationService.show(
+              id: 100,
               title: '🚨 Bin Fully Loaded',
               body:
               'Waste bin is 100% full. Immediate action required.',
               critical: true,
             );
-          } else if (level >= 90) {
-            await NotificationService.showNotification(
-              id: 1,
+          } else if (wasteLevel >= 90) {
+            await NotificationService.show(
+              id: 90,
               title: '⚠ Waste Almost Full',
               body:
-              'Waste level reached 90%. Compression should be triggered.',
+              'Waste level reached 90%. Compression required.',
             );
           }
         }
       } catch (_) {
-        // Silent fail (ESP32 may be off)
+        // ESP32 unreachable → silently ignore
       }
     }
     return Future.value(true);
