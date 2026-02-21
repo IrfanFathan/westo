@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../models/waste_status_model.dart';
+import 'package:westo/data/models/waste_status_model.dart';
+import 'package:westo/data/models/device_info_model.dart';
 
 /// API service responsible for communicating with ESP32 via HTTP
 ///
@@ -50,6 +51,28 @@ class ApiService {
     if (response.statusCode != 200) {
       throw Exception(
         'Failed to trigger compressor (HTTP ${response.statusCode})',
+      );
+    }
+  }
+
+  /// Fetch ESP32 device information
+  ///
+  /// Endpoint: GET /device/info
+  Future<DeviceInfoModel> fetchDeviceInfo() async {
+    final uri = Uri.parse('$_baseUrl/device/info');
+
+    final response = await http.get(uri).timeout(
+      const Duration(seconds: 5),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonMap =
+      json.decode(response.body) as Map<String, dynamic>;
+
+      return DeviceInfoModel.fromJson(jsonMap);
+    } else {
+      throw Exception(
+        'Failed to fetch device info (HTTP ${response.statusCode})',
       );
     }
   }

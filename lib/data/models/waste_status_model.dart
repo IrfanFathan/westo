@@ -19,9 +19,9 @@ class WasteStatusModel {
   /// Factory constructor to create model from JSON (ESP32 response)
   factory WasteStatusModel.fromJson(Map<String, dynamic> json) {
     return WasteStatusModel(
-      wasteLevel: json['wasteLevel'] as int,
-      isConnected: json['isConnected'] as bool,
-      isCompressorActive: json['isCompressorActive'] as bool,
+      wasteLevel: (json['wasteLevel'] as num?)?.toInt() ?? 0,
+      isConnected: json['isConnected'] as bool? ?? true,
+      isCompressorActive: json['isCompressorActive'] as bool? ?? false,
     );
   }
 
