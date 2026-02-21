@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:westo/core/utils/platform.dart';
 import 'package:westo/presentation/screens/splash/splash_screen.dart';
 
 import 'core/theme/app_theme.dart';
@@ -19,22 +21,26 @@ void main() async {
 
   // -------------------------------
   // Initialize Notification System
+  // (Android only)
   // -------------------------------
   await NotificationService.init();
 
   // -------------------------------
   // Initialize Background Worker
+  // (Android/iOS only)
   // -------------------------------
-  Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: false,
-  );
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    Workmanager().initialize(
+      callbackDispatcher,
+      isInDebugMode: false,
+    );
 
-  Workmanager().registerPeriodicTask(
-    'wasteCheckTaskId',
-    wasteCheckTask,
-    frequency: const Duration(minutes: 15),
-  );
+    Workmanager().registerPeriodicTask(
+      'wasteCheckTaskId',
+      wasteCheckTask,
+      frequency: const Duration(minutes: 15),
+    );
+  }
 
   runApp(const WestoApp());
 }
