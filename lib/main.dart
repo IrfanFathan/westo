@@ -78,6 +78,9 @@ class WestoApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
+        Provider<WasteRepositoryImpl>.value(
+          value: repository,
+        ),
         ChangeNotifierProvider(
           create: (_) => WasteViewModel(
             getWasteLevel: getWasteLevel,

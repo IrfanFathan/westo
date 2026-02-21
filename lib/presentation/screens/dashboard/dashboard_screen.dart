@@ -67,11 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-      ),
-      body: Consumer<WasteViewModel>(
+    return Consumer<WasteViewModel>(
         builder: (context, viewModel, _) {
           // Loading state (first load)
           if (viewModel.isLoading && viewModel.wasteStatus == null) {
@@ -152,10 +148,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           : const Text('Trigger Compressor'),
                     ),
                   ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
