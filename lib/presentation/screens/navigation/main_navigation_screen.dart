@@ -25,43 +25,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     ProfileScreen(),
   ];
 
-  /// Get title for current tab
-  String get _currentTitle {
-    switch (_currentIndex) {
-      case 0:
-        return 'Dashboard';
-      case 1:
-        return 'Device Information';
-      case 2:
-        return 'Profile';
-      default:
-        return 'Westo';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_currentTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {
-              // Future: show notifications
-            },
-          ),
-          if (_currentIndex == 2) // Show settings gear on profile tab
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {},
-            ),
-        ],
-      ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: _screens[_currentIndex],
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

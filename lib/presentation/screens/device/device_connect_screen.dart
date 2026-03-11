@@ -56,7 +56,6 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
             builder: (_) => const MainNavigationScreen(),
           ),
         );
-        return;
       } else {
         _error = 'ESP32 not responding properly';
       }

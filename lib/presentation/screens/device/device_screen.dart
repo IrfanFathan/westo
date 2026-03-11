@@ -13,7 +13,11 @@ class DeviceScreen extends StatelessWidget {
       create: (_) => DeviceViewModel(
         repository: context.read<WasteRepositoryImpl>(),
       )..loadDeviceInfo(),
-      child: Consumer<DeviceViewModel>(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Device Information'),
+        ),
+        body: Consumer<DeviceViewModel>(
           builder: (context, vm, _) {
             if (vm.isLoading) {
               return const Center(
@@ -61,6 +65,7 @@ class DeviceScreen extends StatelessWidget {
             );
           },
         ),
+      ),
     );
   }
 }
