@@ -46,44 +46,61 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         title: Text(_currentTitle),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none),
+            icon: const Icon(Icons.notifications_none_rounded),
             onPressed: () {
               // Future: show notifications
             },
           ),
           if (_currentIndex == 2) // Show settings gear on profile tab
             IconButton(
-              icon: const Icon(Icons.settings),
+              icon: const Icon(Icons.settings_outlined),
               onPressed: () {},
             ),
         ],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: IndexedStack(
+          key: ValueKey(_currentIndex),
+          index: _currentIndex,
+          children: _screens,
+        ),
       ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.memory),
-            label: 'Device',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard_outlined),
+              activeIcon: Icon(Icons.dashboard),
+              label: 'Dashboard',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.memory_outlined),
+              activeIcon: Icon(Icons.memory),
+              label: 'Device',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }

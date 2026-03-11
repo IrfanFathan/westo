@@ -40,10 +40,12 @@ class WasteRepositoryImpl implements WasteRepository {
     return model.toEntity();
   }
 
-  /// Trigger compressor using HTTP command
+  /// Send trigger signal to ESP32
+  ///
+  /// Sends {"trigger": 1} or {"trigger": 0} via POST /trigger
   @override
-  Future<void> triggerCompressor() async {
-    await apiService.triggerCompressor();
+  Future<void> sendTriggerSignal(bool enable) async {
+    await apiService.sendTriggerSignal(enable);
   }
 
   /// Stream real-time waste status updates using MQTT

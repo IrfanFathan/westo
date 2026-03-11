@@ -6,12 +6,12 @@ import 'package:westo/presentation/screens/splash/splash_screen.dart';
 
 import 'core/theme/app_theme.dart';
 import 'data/services/api_service.dart';
-import 'data/services/mqtt_service.dart';
+
 import 'data/repositories/waste_repository_impl.dart';
 import 'domain/usecases/get_waste_level.dart';
-import 'domain/usecases/trigger_compressor.dart';
+import 'domain/usecases/set_trigger_state.dart';
 import 'presentation/viewmodels/waste_viewmodel.dart';
-import 'presentation/screens/dashboard/dashboard_screen.dart';
+
 import 'package:workmanager/workmanager.dart';
 import 'core/services/background_worker.dart';
 import 'core/services/notification_service.dart';
@@ -32,7 +32,6 @@ void main() async {
   if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     Workmanager().initialize(
       callbackDispatcher,
-      isInDebugMode: false,
     );
 
     Workmanager().registerPeriodicTask(
@@ -74,7 +73,7 @@ class WestoApp extends StatelessWidget {
 
     // ---- DOMAIN USE CASES ----
     final getWasteLevel = GetWasteLevel(repository);
-    final triggerCompressor = TriggerCompressor(repository);
+    final setTriggerState = SetTriggerState(repository);
 
     return MultiProvider(
       providers: [
@@ -84,7 +83,7 @@ class WestoApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => WasteViewModel(
             getWasteLevel: getWasteLevel,
-            triggerCompressor: triggerCompressor,
+            setTriggerState: setTriggerState,
             repository: repository,
           ),
         ),

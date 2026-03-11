@@ -6,94 +6,155 @@ import '../constants/app_fonts.dart';
 
 class AppTheme {
 
-  // This ThemeData defines how the entire application looks
-  // It is applied in main.dart using:
-  // theme: AppTheme.lightTheme
   static ThemeData lightTheme = ThemeData(
-
-    // Enables Material Design 3 (modern Flutter UI system)
     useMaterial3: true,
-
-    // Sets the default font for the entire app (Inter)
     fontFamily: AppFonts.primaryFont,
-
-    // Sets the background color for all Scaffold widgets (screens)
     scaffoldBackgroundColor: AppColors.background,
 
-    // Defines the core color system used by Flutter widgets
     colorScheme: ColorScheme.light(
-      primary: AppColors.primary,     // Main brand color (buttons, app bar)
-      secondary: AppColors.secondary, // Accent color
-      error: AppColors.error,         // Error messages and alerts
-      surface: AppColors.surface,     // Cards, text fields background
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      error: AppColors.error,
+      surface: AppColors.surface,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onSurface: AppColors.textPrimary,
     ),
 
-    // Defines the default text styles used across the app
     textTheme: TextTheme(
-      titleLarge: AppTextStyles.appTitle, // App titles and main headings
-      titleMedium: AppTextStyles.heading, // Section headings
-      bodyLarge: AppTextStyles.body,      // Main body text
-      bodyMedium: AppTextStyles.body,     // Secondary body text
+      titleLarge: AppTextStyles.appTitle,
+      titleMedium: AppTextStyles.heading,
+      bodyLarge: AppTextStyles.body,
+      bodyMedium: AppTextStyles.body,
+      labelLarge: AppTextStyles.label,
     ),
 
-    // Controls the appearance of all AppBar widgets
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.primary, // AppBar background color
-      foregroundColor: Colors.white,      // AppBar text and icon color
-      elevation: 0,                       // Removes shadow under AppBar
-      titleTextStyle: AppTextStyles.appTitle, // AppBar title text style
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: false,
+      titleTextStyle: AppTextStyles.appTitle.copyWith(fontSize: 20),
     ),
 
-    // Controls the appearance of all ElevatedButton widgets
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary, // Button background color
-        foregroundColor: Colors.white,      // Button text color
-        textStyle: AppTextStyles.button,    // Button text style
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        textStyle: AppTextStyles.button,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Rounded button corners
+          borderRadius: BorderRadius.circular(14),
         ),
         padding: const EdgeInsets.symmetric(
-          horizontal: 20, // Horizontal padding inside button
-          vertical: 14,   // Vertical padding inside button
+          horizontal: 24,
+          vertical: 16,
         ),
       ),
     ),
 
-    // Controls the appearance of all TextField and Input widgets
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,                       // Enables filled background
-      fillColor: AppColors.surface,       // Input background color
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: AppColors.border,        // Default border color
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        textStyle: AppTextStyles.button.copyWith(color: AppColors.primary),
+        side: const BorderSide(color: AppColors.primary, width: 1.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
         ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 16,
+        ),
+      ),
+    ),
+
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        textStyle: AppTextStyles.button,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 16,
+        ),
+      ),
+    ),
+
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.surface,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: AppColors.border,        // Border when input is enabled
-        ),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.border),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
-          color: AppColors.primary,       // Border when input is focused
+          color: AppColors.primary,
           width: 1.5,
         ),
       ),
-      hintStyle: AppTextStyles.caption,   // Hint text style
+      hintStyle: AppTextStyles.caption,
     ),
 
-    // Controls the appearance of all Card widgets in the app
     cardTheme: CardThemeData(
-      color: AppColors.surface,           // Card background color
-      elevation: 2,                       // Shadow depth (small and clean)
+      color: AppColors.surface,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16), // Rounded card corners
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: AppColors.border.withValues(alpha: 0.5),
+        ),
       ),
+      margin: EdgeInsets.zero,
+    ),
+
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.surface,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      titleTextStyle: AppTextStyles.heading,
+      contentTextStyle: AppTextStyles.body,
+    ),
+
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: AppColors.surface,
+      selectedItemColor: AppColors.primary,
+      unselectedItemColor: AppColors.textDisabled,
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+      selectedLabelStyle: const TextStyle(
+        fontFamily: AppFonts.primaryFont,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
+      unselectedLabelStyle: const TextStyle(
+        fontFamily: AppFonts.primaryFont,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
+
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+
+    dividerTheme: const DividerThemeData(
+      color: AppColors.divider,
+      thickness: 1,
+      space: 0,
     ),
   );
 }
-

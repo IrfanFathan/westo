@@ -11,9 +11,9 @@ abstract class WasteRepository {
   /// the real-world state of the bin.
   Future<WasteStatus> getWasteStatus();
 
-  /// Triggers the waste compressor mechanism
+  /// Sends a trigger signal to the ESP32
   ///
-  /// The implementation may call an API, IoT device,
-  /// or mock service, but the UI does not care.
-  Future<void> triggerCompressor();
+  /// [enable] = true sends {"trigger": 1}
+  /// [enable] = false sends {"trigger": 0}
+  Future<void> sendTriggerSignal(bool enable);
 }

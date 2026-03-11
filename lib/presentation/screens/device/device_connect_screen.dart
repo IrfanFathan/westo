@@ -6,15 +6,7 @@ import 'package:westo/presentation/screens/navigation/main_navigation_screen.dar
 
 /// DeviceConnectScreen
 /// -------------------
-/// This screen is used to:
-/// 1. Ask the user to connect their phone to the ESP32 Wi-Fi hotspot
-/// 2. Verify whether ESP32 is reachable (using HTTP)
-/// 3. Navigate to the MainNavigationScreen once the connection is successful
-///
-/// NOTE:
-/// - We do NOT automatically connect to Wi-Fi
-/// - This avoids Android permission & security issues
-/// - User connects manually from system Wi-Fi settings
+/// Guides user to connect phone to ESP32 Wi-Fi and verifies connection.
 class DeviceConnectScreen extends StatefulWidget {
   const DeviceConnectScreen({super.key});
 
@@ -23,17 +15,9 @@ class DeviceConnectScreen extends StatefulWidget {
 }
 
 class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
-  /// Indicates whether the app is currently checking connection
   bool _isChecking = false;
-
-  /// Stores error message if connection fails
   String? _error;
 
-  /// STEP 1: Check ESP32 connectivity
-  ///
-  /// - Sends an HTTP request to ESP32 (`/status`)
-  /// - If response is OK → device is connected
-  /// - If fails → show error
   Future<void> _checkConnection() async {
     setState(() {
       _isChecking = true;
@@ -41,19 +25,21 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
     });
 
     try {
-      // ESP32 default IP in AP mode
       final response = await http
           .get(Uri.parse('http://192.168.4.1/status'))
           .timeout(const Duration(seconds: 4));
 
       if (response.statusCode == 200) {
-        // STEP 2: Navigate to main navigation if ESP32 responds
         if (!mounted) return;
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => const MainNavigationScreen(),
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const MainNavigationScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: const Duration(milliseconds: 400),
           ),
         );
         return;
@@ -61,7 +47,6 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
         _error = 'ESP32 not responding properly';
       }
     } catch (e) {
-      // Phone not connected to ESP32 Wi-Fi
       _error = 'Not connected to WESTO ESP32 Wi-Fi';
     }
 
@@ -73,61 +58,187 @@ class _DeviceConnectScreenState extends State<DeviceConnectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Connect Device'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            /// Wi-Fi icon
-            Icon(
-              Icons.wifi,
-              size: 80,
-              color: AppColors.primary,
-            ),
-            const SizedBox(height: 16),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            children: [
+              const Spacer(),
 
-            /// Instruction text
-            Text(
-              'Connect to WESTO ESP32 Wi-Fi',
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-
-            /// Wi-Fi credentials
-            const Text(
-              'Wi-Fi Name: WESTO_ESP32\nPassword: 12345678',
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 24),
-
-            /// Error message
-            if (_error != null)
-              Text(
-                _error!,
-                style: const TextStyle(color: Colors.red),
-                textAlign: TextAlign.center,
+              // Wi-Fi icon
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.1),
+                      AppColors.primaryLight.withValues(alpha: 0.05),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.wifi_rounded,
+                  size: 64,
+                  color: AppColors.primary,
+                ),
               ),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 32),
 
-            /// Check connection button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isChecking ? null : _checkConnection,
-                child: _isChecking
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('I am Connected'),
+              // Title
+              Text(
+                'Connect to Device',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Instructions
+              Text(
+                'Connect your phone to the WESTO ESP32\nWi-Fi hotspot to get started.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Wi-Fi credentials card
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _CredentialRow(
+                        icon: Icons.wifi,
+                        label: 'Network Name',
+                        value: 'WESTO_ESP32',
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Divider(height: 1),
+                      ),
+                      _CredentialRow(
+                        icon: Icons.lock_outline,
+                        label: 'Password',
+                        value: '12345678',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Error message
+              if (_error != null)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _error!,
+                          style: const TextStyle(
+                            color: AppColors.error,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              const Spacer(),
+
+              // Connect button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isChecking ? null : _checkConnection,
+                  child: _isChecking
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('I\'m Connected'),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Helper widget for credential display
+class _CredentialRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _CredentialRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.primary),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 15,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 }
