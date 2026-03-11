@@ -51,6 +51,15 @@ class WasteViewModel extends ChangeNotifier {
   /// Cool-down duration
   static const Duration _cooldownDuration = Duration(seconds: 15);
 
+  /// Timer for regular updates
+  Timer? _pollingTimer;
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
+
   /// -------------------------------
   /// Load initial data using HTTP
   /// -------------------------------
@@ -59,7 +68,9 @@ class WasteViewModel extends ChangeNotifier {
   /// - HTTP success → ESP32 Connected
   /// - HTTP failure → ESP32 Disconnected
   Future<void> loadInitialStatus() async {
-    _setLoading(true);
+    if (_wasteStatus == null) {
+      _setLoading(true);
+    }
 
     try {
       _wasteStatus = await getWasteLevel();
@@ -71,7 +82,40 @@ class WasteViewModel extends ChangeNotifier {
       _errorMessage = 'ESP32 not reachable';
     }
 
-    _setLoading(false);
+    if (_isLoading) {
+      _setLoading(false);
+    } else {
+      notifyListeners();
+    }
+  }
+
+  /// Start polling for real-time updates
+  void startPolling() {
+    loadInitialStatus(); // Load immediately first
+    
+    _pollingTimer?.cancel();
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+      if (!_isLoading && !_isInCooldown) {
+        try {
+          _wasteStatus = await getWasteLevel();
+          _isEsp32Connected = true;
+          _errorMessage = null;
+          notifyListeners();
+        } catch (e) {
+          if (_isEsp32Connected) {
+            _isEsp32Connected = false;
+            _errorMessage = 'ESP32 connection lost';
+            notifyListeners();
+          }
+        }
+      }
+    });
+  }
+
+  /// Stop polling
+  void stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
   }
 
   /// -------------------------------

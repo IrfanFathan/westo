@@ -31,17 +31,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final viewModel =
     Provider.of<WasteViewModel>(context, listen: false);
 
-    // Initial REST load
-    viewModel.loadInitialStatus();
+    // Start polling REST data periodically
+    viewModel.startPolling();
+    
+    // Add listener for dialog popups side-effects
+    viewModel.addListener(_onViewModelChange);
+  }
+
+  @override
+  void dispose() {
+    final viewModel = Provider.of<WasteViewModel>(context, listen: false);
+    viewModel.removeListener(_onViewModelChange);
+    viewModel.stopPolling();
+    super.dispose();
+  }
+
+  void _onViewModelChange() {
+    if (!mounted) return;
+    final viewModel = Provider.of<WasteViewModel>(context, listen: false);
+    final status = viewModel.wasteStatus;
+    
+    if (status != null) {
+      if (status.wasteLevel >= 90 && status.wasteLevel < 100 && !_shownWarningDialog) {
+        _shownWarningDialog = true;
+        _showWarningDialog(context, viewModel);
+      } else if (status.wasteLevel >= 100 && !_shownCriticalDialog) {
+        _shownCriticalDialog = true;
+        _showCriticalDialog(context);
+      } else if (status.wasteLevel < 90) {
+        _shownWarningDialog = false;
+        _shownCriticalDialog = false;
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-      ),
-      body: Consumer<WasteViewModel>(
+    return Consumer<WasteViewModel>(
         builder: (context, viewModel, _) {
           // Loading state (first load)
           if (viewModel.isLoading && viewModel.wasteStatus == null) {
@@ -72,31 +98,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           }
 
           final status = viewModel.wasteStatus!;
-
-          /// -------------------------------
-          /// 90% WARNING DIALOG
-          /// -------------------------------
-          if (status.wasteLevel >= 90 &&
-              status.wasteLevel < 100 &&
-              !_shownWarningDialog) {
-            _shownWarningDialog = true;
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _showWarningDialog(context, viewModel);
-            });
-          }
-
-          /// -------------------------------
-          /// 100% CRITICAL ALERT
-          /// -------------------------------
-          if (status.wasteLevel >= 100 &&
-              !_shownCriticalDialog) {
-            _shownCriticalDialog = true;
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _showCriticalDialog(context);
-            });
-          }
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -131,13 +132,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         await viewModel.compressWaste();
 
                         if (context.mounted) {
+                          final isError = viewModel.errorMessage != null;
                           ScaffoldMessenger.of(context)
                               .showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Compression started'),
-                              duration:
-                              Duration(seconds: 2),
+                            SnackBar(
+                              content: Text(isError ? viewModel.errorMessage! : 'Compression started'),
+                              backgroundColor: isError ? Colors.red : Colors.green,
+                              duration: const Duration(seconds: 2),
                             ),
                           );
                         }
@@ -147,10 +148,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           : const Text('Trigger Compressor'),
                     ),
                   ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }
@@ -184,11 +181,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               await viewModel.compressWaste();
 
               if (context.mounted) {
+                final isError = viewModel.errorMessage != null;
                 ScaffoldMessenger.of(context)
                     .showSnackBar(
-                  const SnackBar(
-                    content:
-                    Text('Compression started'),
+                  SnackBar(
+                    content: Text(isError ? viewModel.errorMessage! : 'Compression started'),
+                    backgroundColor: isError ? Colors.red : Colors.green,
                   ),
                 );
               }
