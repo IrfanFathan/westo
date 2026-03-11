@@ -12,18 +12,14 @@ import 'package:westo/data/services/mqtt_service.dart';
 /// - DATA layer (API / MQTT)
 /// - DOMAIN layer (Entities & UseCases)
 ///
-/// Notes:
-/// - REST (HTTP) is the CURRENT source of truth
-/// - MQTT is OPTIONAL and reserved for future real-time updates
+/// UI and domain NEVER talk directly to services.
 class WasteRepositoryImpl implements WasteRepository {
   final ApiService apiService;
-
-  /// MQTT is optional for now
-  final MqttService? mqttService;
+  final MqttService mqttService;
 
   WasteRepositoryImpl({
     required this.apiService,
-    this.mqttService, // ✅ optional
+    required this.mqttService,
   });
 
   /// Fetch waste status using HTTP (REST)
@@ -48,23 +44,19 @@ class WasteRepositoryImpl implements WasteRepository {
 
   /// Stream real-time waste status updates using MQTT
   ///
-  /// ⚠️ Currently NOT USED
-  /// ⚠️ ESP32 firmware does not publish MQTT data yet
+  /// This is NOT part of the domain interface,
+  /// but exposed for ViewModels to consume.
   Stream<WasteStatus> watchWasteStatus() {
-    if (mqttService == null) {
-      // Safe fallback when MQTT is disabled
-      return const Stream.empty();
-    }
-
-    return mqttService!.wasteStatusStream.map(
+    return mqttService.wasteStatusStream.map(
           (WasteStatusModel model) => model.toEntity(),
     );
   }
 
   /// Fetch ESP32 device information (HTTP)
   ///
-  /// Device metadata is a presentation concern,
-  /// not core business logic — so it stays out of domain.
+  /// This method is intentionally NOT added to the domain interface
+  /// because device metadata is a presentation concern,
+  /// not core business logic.
   Future<DeviceInfoModel> getDeviceInfo() async {
     return apiService.fetchDeviceInfo();
   }
