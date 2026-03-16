@@ -18,10 +18,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
   // Screens for each tab
-  final List<Widget> _screens = const [
-    DashboardScreen(),
-    DeviceScreen(),
-  ];
+  final List<Widget> _screens = const [DashboardScreen(), DeviceScreen()];
 
   /// Get title for current tab
   String get _currentTitle {
