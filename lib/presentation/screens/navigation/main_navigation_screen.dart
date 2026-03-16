@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../dashboard/dashboard_screen.dart';
 import '../device/device_screen.dart';
-import '../profile/profile_screen.dart';
 
 /// MainNavigationScreen
 /// --------------------
 /// Holds bottom navigation bar and switches
-/// between Dashboard, Device, and Profile screens.
+/// between Dashboard and Device screens.
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
@@ -22,7 +21,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     DeviceScreen(),
-    ProfileScreen(),
   ];
 
   /// Get title for current tab
@@ -32,8 +30,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         return 'Dashboard';
       case 1:
         return 'Device Information';
-      case 2:
-        return 'Profile';
       default:
         return 'Westo';
     }
@@ -51,11 +47,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               // Future: show notifications
             },
           ),
-          if (_currentIndex == 2) // Show settings gear on profile tab
-            IconButton(
-              icon: const Icon(Icons.settings_outlined),
-              onPressed: () {},
-            ),
         ],
       ),
       body: AnimatedSwitcher(
@@ -93,11 +84,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               icon: Icon(Icons.memory_outlined),
               activeIcon: Icon(Icons.memory),
               label: 'Device',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
             ),
           ],
         ),
